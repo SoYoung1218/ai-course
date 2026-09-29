@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 성공</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        pre { background: #f4f4f4; padding: 10px; border: 1px solid #ccc; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>✅ 결제 성공</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>항목</th>
+                <th>내용</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>상태 (status)</td><td>{{ status }}</td></tr>
+            <tr><td>주문명 (orderName)</td><td>{{ orderName }}</td></tr>
+            <tr><td>총 금액 (totalAmount)</td><td>{{ totalAmount }}</td></tr>
+            <tr><td>결제 방식 (method)</td><td>{{ method }}</td></tr>
+            <tr><td>승인 일시 (approvedAt)</td><td>{{ approvedAt }}</td></tr>
+        </tbody>
+    </table>
+
+    <h3>원본 JSON 응답</h3>
+    <pre>{{ json_response }}</pre>
+</body>
+</html>
