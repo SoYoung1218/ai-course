@@ -23,5 +23,3 @@ styles = {
 for name, suffix in styles.items():
     correct = sum(last_number(ask("qwen3:8b", q + suffix)) == a for q, a in problems)
     print(f"{name:4s} 정답 {correct}/5")
-
-# 3주차: Transformer에서 LLM까지
