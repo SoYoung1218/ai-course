@@ -1,0 +1,98 @@
+전화번호를 어떤 형식으로 정리하고 싶은지에 따라 여러 가지 방법이 있습니다. 가장 흔히 쓰이는 **1) 숫자만 추출하기**, **2) 하이픈(`-`)을 넣어 표준 형식으로 만들기**, **3) 특정 국가 번호 붙이기** 등의 기능을 포함한 파이썬 함수를 만들어 드릴게요.
+
+### 1. 종합 전화번호 정리 함수 (Python)
+
+이 함수는 입력된 문자열에서 숫자만 남긴 뒤, 길이에 따라 적절한 위치에 하이픈을 넣어줍니다.
+
+```python
+import re
+
+def format_phone_number(phone_str):
+    # 1. 숫자 이외의 모든 문자를 제거
+    digits = re.sub(r'\D', '', phone_str)
+    
+    length = len(digits)
+    
+    # 2. 길이에 따른 포맷팅
+    if length == 8:
+        # 지역번호가 없는 경우 (예: 일반 전화 02-1234-5678은 10자리이므로 해당 없음)
+        # 보통 8자리는 옛날 번호나 특수 번호일 수 있음
+        return f"{digits[:4]}-{digits[4:]}"
+    
+    elif length == 10:
+        # 휴대폰 또는 지역번호 포함 (010-1234-5678 또는 02-123-4567)
+        # 02로 시작하는 서울 지역번호 예외 처리
+        if digits.startswith('02'):
+            return f"{digits[:3]}-{digits[3:7]}-{digits[7:]}"
+        else:
+            return f"{digits[:3]}-{digits[3:7]}-{digits[7:]}"
+            
+    elif length == 11:
+        # 일반적인 휴대폰 번호 (010-1234-5678)
+        return f"{digits[:3]}-{digits[3:7]}-{digits[7:]}"
+    
+    elif length == 12:
+        # 국제 전화 형식 등 (예: 821012345678)
+        return f"{digits[:2]}-{digits[2:4]}-{digits[4:8]}-{digits[8:]}"
+    
+    else:
+        # 형식이 맞지 않으면 숫자만 반환하거나 원본 유지
+        return digits
+
+# --- 테스트 코드 ---
+test_numbers = [
+    "01012345678",          # 숫자만 있는 경우
+    "010-1234-5678",        # 이미 하이픈이 있는 경우
+    "02.123.4567",          # 마침표가 있는 경우
+    "(010) 1234 5678",      # 괄호와 공백이 있는 경우
+    "821012345678",         # 국가번호 포함
+    "021234567"             # 서울 지역번호 (9자리)
+]
+
+print(f"{'원본':<20} | {'정리된 결과'}")
+print("-" * 40)
+for num in test_numbers:
+    print(f"{num:<20} | {format_phone_number(num)}")
+```
+
+---
+
+### 2. 기능별 핵심 코드 설명
+
+만약 전체 함수가 아니라 특정 기능만 필요하시다면 아래 코드를 참고하세요.
+
+#### ① 숫자만 남기기 (가장 기본)
+데이터 정제 시 가장 먼저 해야 할 작업입니다.
+```python
+import re
+clean_number = re.sub(r'\D', '', "010-1234-5678") 
+# 결과: "01012345678"
+```
+
+#### ② 리스트로 된 전화번호 한꺼번에 정리하기 (Pandas 활용)
+엑셀이나 CSV 파일을 다룬다면 `pandas` 라이브러리를 쓰는 것이 훨씬 빠릅니다.
+
+```python
+import pandas as pd
+import re
+
+def clean_phone(text):
+    digits = re.sub(r'\D', '', str(text))
+    if len(digits) == 11:
+        return f"{digits[:3]}-{digits[3:7]}-{digits[7:]}"
+    elif len(digits) == 10:
+        return f"{digits[:3]}-{digits[3:6]}-{digits[6:]}" # 혹은 02 예외처리 추가
+    return digits
+
+# 데이터프레임 적용 예시
+df = pd.DataFrame({'raw_phone': ['01012345678', '021234567', '010-9999-8888']})
+df['clean_phone'] = df['raw_phone'].apply(clean_phone)
+print(df)
+```
+
+### 💡 팁: 어떤 상황인가요?
+1. **엑셀 데이터를 정리 중이다**: 위 `pandas` 코드를 사용하세요.
+2. **웹 크롤링 중이다**: `re.sub(r'\D', '', text)`를 사용하여 숫자만 뽑아내는 것이 우선입니다.
+3. **국제 번호가 섞여 있다**: 국가 번호(82)를 인식하는 로직을 추가해야 합니다.
+
+원하시는 구체적인 규칙(예: "무조건 010-XXXX-XXXX 형식이어야 함")이 있다면 말씀해 주세요! 바로 수정해 드릴게요.
